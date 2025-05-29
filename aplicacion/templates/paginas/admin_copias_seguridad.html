@@ -1,0 +1,116 @@
+{% extends "paginas/base_interfaz_admin.html" %}
+{% load static %}
+
+{% block titulo %}Admin_Copias{% endblock %}
+
+{% block estilos %}
+<link rel="stylesheet" href="{% static 'aplicacion/css/style_admin_copias1.css' %}">
+{% endblock %}
+
+{% block contenido %}
+{% block scripts %}
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'aplicacion/js/script_admin_copias.js' %}" defer></script>
+{% endblock %}
+<main class="main-content">
+    <div class="tab-pane" id="backup">
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Copias de Seguridad</h1>
+                <div class="dashboard-actions">
+                    <button class="btn btn-outline" id="confirm-restore-global">
+                        <i class="fas fa-sync"></i> Restaurar
+                    </button>
+                    <button class="btn btn-primary" id="create-backup-btn">
+                        <i class="fas fa-plus"></i> Nueva Copia
+                    </button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Copias de Seguridad Recientes</h2>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Fecha</th>
+                                <th>Tamaño</th>
+                                <th>Creado por</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for backup in backups %}
+                            <tr data-backup-id="{{ backup.id }}">
+                                <td>{{ backup.nombre }}</td>
+                                <td>{{ backup.fecha }}</td>
+                                <td>{{ backup.tamano }}</td>
+                                <td>{{ backup.creado_por }}</td>
+                                <td><span class="badge badge-success">{{ backup.estado }}</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn download-btn" title="Descargar" data-backup-id="{{ backup.id }}">
+                                            <i class="fas fa-download"></i> Descargar
+                                        </button>
+                                        <button class="action-btn restore-btn" title="Restaurar" data-backup-id="{{ backup.id }}">
+                                            <i class="fas fa-undo"></i> Restaurar
+                                        </button>
+                                        <button class="action-btn delete-btn" title="Eliminar" data-backup-id="{{ backup.id }}">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección de configuración (puedes hacerla funcional después) -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Configuración de Copias de Seguridad</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Programación de Copias de Seguridad</label>
+                        <select class="form-control">
+                            <option selected>Manual</option>
+                            <option>Diaria</option>
+                            <option>Mensual</option>
+                            <option>Semanal (Lunes)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Hora de Ejecución</label>
+                        <input type="time" class="form-control" value="09:30">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tiempo de Retención</label>
+                        <select class="form-control">
+                            <option>1 Semana</option>
+                            <option>2 Semanas</option>
+                            <option selected>1 Mes</option>
+                            <option>3 Meses</option>
+                            <option>6 Meses</option>
+                            <option>1 Año</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales para acciones -->
+    {% include 'paginas/modales_backup.html' %}
+    
+</main>
+{% endblock %}
