@@ -45,12 +45,16 @@ body {
     background: url('../images/fondo.jpg') no-repeat fixed center center / cover;
 }
 
+.mobile-header {
+    background: linear-gradient(-135deg, #32794a, #0c0c0c);
+}
+
 .fondo {
     max-width: 75%;
     height: auto;
     margin: 10px auto;
     background: #fefae0f0;
-    color: #000000;
+    color: #000000b3;
     padding: 30px;
     border-radius: 35px;
     box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.5);
@@ -93,7 +97,6 @@ nav ul li a {
     padding: 5px 7px;
     text-transform: uppercase;
     text-decoration: none;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 li a.active,
@@ -129,7 +132,7 @@ li a:hover {
         z-index: 999;
     }
 
-    #check:checked ~ ul.menu {
+    #check:checked~ul.menu {
         display: flex;
     }
 
@@ -215,7 +218,7 @@ button#toggleClima:hover {
 .asw-menu {
     right: 20px !important;
     left: auto !important;
-    top: 3.5vh !important;  
+    top: 3.5vh !important;
 }
 
 .asw-menu-header,
@@ -495,7 +498,7 @@ button#toggleClima:hover {
     border-radius: 12px;
     text-align: center;
     width: 300px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -530,8 +533,15 @@ button#toggleClima:hover {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* ESTILOS PARA ALERTAS PERSONALIZADAS */
@@ -639,13 +649,27 @@ button#toggleClima:hover {
 
 /* Animación para alertas */
 @keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideOut {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
 }
 
 /* Estilos para validación de campos */
@@ -667,4 +691,226 @@ button#toggleClima:hover {
 
 .field.error .error-message {
     display: block;
+}
+
+
+/* MEDIA QUERIES PARA DISPOSITIVOS MÓVILES */
+
+/* Dispositivos pequeños (móviles en portrait, menos de 576px) */
+@media (max-width: 575.98px) {
+
+    /* Navbar */
+    .logonav {
+        height: 50px;
+    }
+
+    nav ul.menu {
+        width: 150px;
+        right: 10px;
+    }
+
+    /* Contenido principal */
+    .fondo-base {
+        padding: 15px;
+    }
+
+    /* Footer */
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 15px;
+    }
+
+    .footer-logo {
+        width: 120px;
+    }
+
+    .footer-social .social-icons {
+        justify-content: center;
+    }
+
+    /* Clima */
+    #toggleClima {
+        right: 10px;
+        bottom: 70px;
+    }
+
+    #clima {
+        right: 10px;
+        bottom: 130px;
+        width: 120px;
+    }
+}
+
+/* Dispositivos pequeños a medianos (móviles en landscape, 576px a 767.98px) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+
+    /* Navbar */
+    nav ul li a {
+        font-size: 18px;
+    }
+
+    /* Footer */
+    .footer-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Dispositivos medianos (tablets, 768px a 991.98px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+
+    /* Navbar */
+    nav ul li a {
+        font-size: 18px;
+        padding: 5px;
+    }
+
+    /* Footer */
+    .footer-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .footer-social {
+        grid-column: span 3;
+        text-align: center;
+    }
+
+    .footer-social .social-icons {
+        justify-content: center;
+    }
+}
+
+/* Dispositivos grandes (desktops pequeños, 992px a 1199.98px) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+
+    /* Ajustes menores */
+    .footer-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .footer-social {
+        grid-column: span 1;
+    }
+}
+
+/* AJUSTES PARA ORIENTACIÓN EN MÓVILES */
+@media (max-height: 500px) and (orientation: landscape) {
+
+    /* Navbar */
+    nav {
+        height: 60px;
+    }
+
+    .logonav {
+        height: 50px;
+    }
+
+    nav ul.menu {
+        top: 60px;
+    }
+
+    /* Footer */
+    .site-footer {
+        padding-top: 20px;
+    }
+
+    .footer-container {
+        gap: 15px;
+    }
+}
+
+/* MEJORAS PARA ELEMENTOS ESPECÍFICOS */
+
+/* Ajuste para el loader en móviles */
+@media (max-width: 767.98px) {
+    .loader-text {
+        font-size: 20px;
+    }
+
+    .loader-bird {
+        max-width: 80%;
+    }
+}
+
+/* Ajuste para las alertas en móviles */
+@media (max-width: 575.98px) {
+    .ecoparm-alert {
+        width: calc(100% - 40px);
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+}
+
+/* Ajuste para el modal de login en móviles */
+@media (max-width: 767.98px) {
+    .modal_login .wrapper {
+        width: 90%;
+        max-width: 350px;
+    }
+}
+
+/* Mejora para el fondo en dispositivos pequeños */
+@media (max-width: 767.98px) {
+    .fondo {
+        max-width: 90%;
+        padding: 20px;
+        border-radius: 25px;
+    }
+}
+
+/* Estilo para el enlace de recuperación de contraseña */
+#loginModal p a {
+    color: #32794a;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 5px 0;
+}
+
+#loginModal p a:hover {
+    color: #2e7d32;
+    transform: translateY(-2px);
+}
+
+#loginModal p a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #32794a;
+    transition: width 0.3s ease;
+}
+
+#loginModal p a:hover::after {
+    width: 100%;
+}
+
+/* Estilos para los modos de contraste */
+[data-asw-filter="dark-contrast"] #loginModal p a {
+    color: #4dabf7;
+}
+
+[data-asw-filter="dark-contrast"] #loginModal p a:hover {
+    color: #6bc0ff;
+}
+
+[data-asw-filter="dark-contrast"] #loginModal p a::after {
+    background-color: #4dabf7;
+}
+
+[data-asw-filter="light-contrast"] #loginModal p a {
+    color: #0066cc;
+    text-decoration: underline;
+}
+
+[data-asw-filter="light-contrast"] #loginModal p a:hover {
+    color: #004080;
+}
+
+[data-asw-filter="light-contrast"] #loginModal p a::after {
+    display: none;
 }

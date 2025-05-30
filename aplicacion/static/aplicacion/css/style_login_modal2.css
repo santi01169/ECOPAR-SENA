@@ -309,4 +309,118 @@
     color: #155724;
 }
 
+
+/* Base para todas las alertas */
+.ecoparm-alert {
+    width: 350px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 10000;
+    transform: translateX(150%);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.ecoparm-alert.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Encabezado con gradiente */
+.ecoparm-alert-header {
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #32794a, #2c6544);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ecoparm-alert-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+}
+
+.ecoparm-alert-icon {
+    font-size: 1.3rem;
+}
+
+/* Cuerpo de la alerta */
+.ecoparm-alert-body {
+    padding: 20px;
+    background: #fff;
+}
+
+.ecoparm-alert-message {
+    margin: 0;
+    color: #4a5568;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+/* Animaciones */
+@keyframes toastIn {
+    from {
+        transform: translateX(150%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes toastOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(150%);
+        opacity: 0;
+    }
+}
+
+/* Iconos para diferentes tipos de alertas */
+.ecoparm-alert.success .ecoparm-alert-header {
+    background: linear-gradient(135deg, #38a169, #2c6544);
+}
+
+.ecoparm-alert.error .ecoparm-alert-header {
+    background: linear-gradient(135deg, #e53e3e, #c53030);
+}
+
+.ecoparm-alert.warning .ecoparm-alert-header {
+    background: linear-gradient(135deg, #dd6b20, #c05621);
+}
+
+.ecoparm-alert.info .ecoparm-alert-header {
+    background: linear-gradient(135deg, #3182ce, #2c5282);
+}
+
+/* Mensajes de error en formulario */
+.input-error {
+    border-color: #e53e3e !important;
+    animation: inputErrorShake 0.4s ease;
+    box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.2);
+}
+
+@keyframes inputErrorShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    20%, 60% {
+        transform: translateX(-5px);
+    }
+    40%, 80% {
+        transform: translateX(5px);
+    }
+}
   

@@ -1,15 +1,31 @@
 body {
-    background-color: #f4f9f6;
+    background: url('../images/fondo.jpg') no-repeat fixed center center / cover;
     color: #333;
     margin: 0;
     padding: 0;
+    line-height: 1.6;
+}
+
+.ecoparm {
+    height: 50px;
+    transition: transform 0.3s ease;
+}
+
+.ecoparm:hover {
+    transform: scale(1.05);
 }
 
 .main-content {
     flex: 1;
-    margin-left: 250px;
-    padding: 20px;
+    margin-left: 270px;
+    padding: 30px;
     transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-right: 20px;
+    margin-top: 20px;
+    min-height: calc(100vh - 100px);
 }
 
 .container {
@@ -19,31 +35,32 @@ body {
 
 .sidebar {
     width: 250px;
-    background: linear-gradient(-135deg, #32794a, #0c0c0c);
+    background: linear-gradient(-135deg, rgba(50, 121, 74, 0.95), rgba(12, 12, 12, 0.95));
     color: white;
-    padding: 20px 0;
     position: fixed;
     height: 100vh;
     z-index: 1000;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
+    top: 0;
+    padding-top: 0;
 }
 
 .logo {
-    padding: 15px 20px;
+    padding: 15px 15px;
     font-size: 1.25rem;
     font-weight: bold;
-    color: #2c6544;
     text-align: center;
-    border-bottom: 1px solid #b1e8c7;
-    margin-bottom: 20px;
     display: block;
+    transition: all 0.3s ease;
 }
 
 .menu {
     list-style: none;
     padding: 0;
     margin: 0;
+    margin-top: 20px;
+    padding: 15px 0;
 }
 
 /* .menu-item.active {
@@ -55,7 +72,7 @@ body {
     position: relative;
     padding: 12px 20px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin: 4px 8px;
+    margin: 5px 10px;
     border-radius: 6px;
     overflow: hidden;
 }
@@ -68,18 +85,33 @@ body {
     gap: 12px;
     position: relative;
     z-index: 1;
+    font-size: 0.95rem;
 }
 
 .menu-item:hover {
-    background-color: rgba(177, 232, 199, 0.3);
+    background-color: rgba(177, 232, 199, 0.4);
     transform: translateX(5px);
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu-item.active {
+    background-color: rgba(50, 121, 74, 0.7);
+    font-weight: 500;
+}
+
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 120px;
+    left: 20px;
+    right: 20px;
+    text-align: center;
 }
 
 /* ==================== */
 /* HEADER MÓVIL */
 /* ==================== */
 .menu-toggle {
-    background: none;
     border: none;
     color: #2c2e65;
     font-size: 1.25rem;
@@ -99,7 +131,7 @@ body {
 .asw-menu {
     right: 20px !important;
     left: auto !important;
-    top: 3.5vh !important;  
+    top: 3.5vh !important;
 }
 
 .asw-menu-header,
@@ -242,10 +274,9 @@ body {
 
 /* Estilos para el item de perfil en la barra lateral */
 .menu-item.perfil-item {
-    padding: 15px 0;
-    margin-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    text-align: center;
+    margin-top: 0;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 .menu-item.perfil-item a {
@@ -262,8 +293,8 @@ body {
 }
 
 .barra-profile-photo {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     overflow: hidden;
     margin-bottom: 8px;
@@ -285,11 +316,15 @@ body {
 .barra-username {
     font-size: 14px;
     font-weight: 500;
-    color: white;
+    color: rgba(255, 255, 255, 0.817);
     text-align: center;
     margin-top: 5px;
     width: 100%;
-    word-break: break-word;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.perfil-item a {
+    text-decoration: none !important;
 }
 
 /* Efecto hover para el conjunto */
@@ -297,6 +332,59 @@ body {
     opacity: 0.9;
 }
 
-.menu-item.perfil-item:hover .barra-username {
-    color: #4eacfd;
+.mobile-header {
+    background: linear-gradient(-135deg, rgba(12, 12, 12, 0.95), rgba(50, 121, 74, 0.95));
+    position: relative;
+    margin-left: 250px;
+
+}
+
+.sidebar-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 250px;
+    padding: 15px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos para iconos en alertas */
+.alert-icon {
+    font-size: 1.5rem;
+    margin-right: 12px;
+    color: white;
+}
+
+.ecoparm-alert-header {
+    display: flex;
+    align-items: center;
+    padding: 18px 24px;
+}
+
+/* Iconos para diferentes tipos de alertas */
+.alert-icon.fa-check-circle {
+    color: #a0ffc3;
+}
+
+.alert-icon.fa-times-circle {
+    color: #ffb4b4;
+}
+
+.alert-icon.fa-exclamation-triangle {
+    color: #ffe08a;
+}
+
+.alert-icon.fa-question-circle {
+    color: #bee3f8;
+}
+
+/* Iconos en mensajes de error */
+.error-icon {
+    color: #e53e3e;
+    font-size: 1.1rem;
+    margin-right: 8px;
+}
+
+.menu-toggle {
+    display: none;
 }

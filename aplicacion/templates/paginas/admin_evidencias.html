@@ -5,12 +5,10 @@
 
 {% block estilos %}
 <link rel="stylesheet" href="{% static 'aplicacion/css/style_admin_evidencias3.css' %}">
-<!-- Font Awesome para íconos -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 {% endblock %}
 
 {% block contenido %}
-<main class="main-content">
+<main class="main-content">     
     <div class="tab-pane" id="evidence">
         <div class="dashboard">
             <div class="dashboard-header">
@@ -54,7 +52,9 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="8">No hay evidencias registradas.</td></tr>
+                        <tr>
+                            <td colspan="8" style="text-align: center; color: #888;">Sin datos</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>

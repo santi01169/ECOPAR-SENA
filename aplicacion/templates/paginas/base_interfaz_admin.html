@@ -10,6 +10,8 @@
 
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{% static 'aplicacion/css/style_base_admin2.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     {% block estilos %}{% endblock %}
 </head>
 
@@ -24,7 +26,9 @@
         <button class="menu-toggle" id="menu-toggle">
             <i class="fas fa-bars"></i>
         </button>
-        <div class="logo">ECOPARM</div>
+        <div class="logo">
+            <img src="{% static 'aplicacion/images/ecoparm.png' %}" alt="ECOPARM" class="ecoparm">
+        </div>
     </header>
 
     <div class="container">
@@ -37,73 +41,68 @@
                             <div class="barra-profile-photo">
                                 <img src="{% if request.user.foto_perfil %}{{ request.user.foto_perfil.url }}{% else %}{% static 'aplicacion/images/usuario.png' %}{% endif %}"
                                     alt="Foto de perfil" class="barra-profile-img">
+                            </div>
+                            <span class="barra-username">{{ request.user.nombre }} {{ request.user.apellido }}</span>
+                        </div>
                     </a>
-    </div>
-    <span class="barra-username">{{ request.user.nombre }} {{ request.user.apellido }}</span>
-    </div>
+                </li>
+                <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
+                    <a href="{% url 'admin_dashboard' %}">
+                        <div class="menu-item-content">
+                            <i class="fas fa-chart-line"></i>
+                            <span>DASHBOARD</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
+                    <a href="{% url 'admin_users' %}">
+                        <div class="menu-item-content">
+                            <i class="fas fa-users"></i>
+                            <span>USUARIOS</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
+                    <a href="{% url 'admin_evidencias' %}">
+                        <div class="menu-item-content">
+                            <i class="fas fa-folder-open"></i>
+                            <span>EVIDENCIAS</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
+                    <a href="{% url 'admin_flora_fauna' %}">
+                        <div class="menu-item-content">
+                            <i class="fas fa-leaf"></i>
+                            <span>FLORA/FAUNA</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
+                    <a href="{% url 'admin_copias_seguridad' %}">
+                        <div class="menu-item-content">
+                            <i class="fas fa-database"></i>
+                            <span>COPIAS DE SEGURIDAD</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
+                    <a href="{% url 'index' %}">
+                        <div class="menu-item-content">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>CERRAR SESION</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="logo">
+                    <img src="{% static 'aplicacion/images/logo_oficina_gestion_riesgo.png' %}" alt="ECOPARM"
+                        class="ecoparm">
+                </div>
+        </nav>
 
-    </li>
-    <hr>
-    <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
-        <a href="{% url 'admin_dashboard' %}">
-            <div class="menu-item-content">
-                <i class="fas fa-folder-open"></i>
-                <span>DASHBOARD</span>
-            </div>
-        </a>
-    </li>
-    <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
-        <a href="{% url 'admin_users' %}">
-            <div class="menu-item-content">
-                <i class="fas fa-folder-open"></i>
-                <span>USUARIOS</span>
-            </div>
-        </a>
-    </li>
-    <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
-        <a href="{% url 'admin_evidencias' %}">
-            <div class="menu-item-content">
-                <i class="fas fa-folder-open"></i>
-                <span>EVIDENCIAS</span>
-            </div>
-        </a>
-    </li>
-    <li class="menu-item {% if active_section == 'florafauna' %}active{% endif %}">
-        <a href="{% url 'admin_flora_fauna' %}">
-            <div class="menu-item-content">
-                <i class="fas fa-folder-open"></i>
-                <span>FLORA/FAUNA</span>
-            </div>
-        </a>
-    </li>
-    <li class="menu-item {% if active_section == 'emergencias' %}active{% endif %}">
-        <a href="{% url 'admin_emergencias' %}">
-            <div class="menu-item-content">
-                <i class="fas fa-folder-open"></i>
-                <span>EMERGENCIAS</span>
-            </div>
-        </a>
-    </li>
-    <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
-        <a href="{% url 'admin_copias_seguridad' %}">
-            <div class="menu-item-content">
-                <i class="fas fa-folder-open"></i>
-                <span>COPIAS DE SEGURIDAD</span>
-            </div>
-        </a>
-    </li>
-    <li class="menu-item {% if active_section == 'evidencias' %}active{% endif %}">
-        <a href="{% url 'index' %}">
-            <div class="menu-item-content">
-                <i class="fas fa-folder-open"></i>
-                <span>CERRAR SESION</span>
-            </div>
-        </a>
-    </li>
-    </ul>
-    </nav>
-
-    {% block contenido %}{% endblock %}
+        {% block contenido %}{% endblock %}
     </div>
 </body>
 

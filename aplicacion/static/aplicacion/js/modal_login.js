@@ -14,39 +14,65 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeRecoveryBtn = document.querySelector('.close-recovery-modal');
 
     // ===== ALERTAS PERSONALIZADAS =====
-    function showAlert(type, message, duration = 5000) {
+    function showAlert(type, message, duration = 4000) {
+        // Eliminar alertas anteriores si existen
         const existingAlerts = document.querySelectorAll('.ecoparm-alert');
-        existingAlerts.forEach(alert => alert.remove());
+        existingAlerts.forEach(alert => {
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 300);
+        });
 
+        // Crear alerta
         const alert = document.createElement('div');
-        alert.className = `ecoparm-alert ecoparm-alert-${type}`;
+        alert.className = `ecoparm-alert ${type}`;
+
+        // Configurar icono según el tipo
+        let icon;
+        switch (type) {
+            case 'success':
+                icon = 'fas fa-check-circle';
+                break;
+            case 'error':
+                icon = 'fas fa-times-circle';
+                break;
+            case 'warning':
+                icon = 'fas fa-exclamation-triangle';
+                break;
+            case 'info':
+            default:
+                icon = 'fas fa-info-circle';
+        }
+
         alert.innerHTML = `
-            <div class="ecoparm-alert-content">
-                <span class="ecoparm-alert-icon">
-                    ${type === 'success' ? '✓' : type === 'error' ? '✗' : '!'}
-                </span>
-                <span class="ecoparm-alert-message">${message}</span>
-                <span class="ecoparm-alert-close">&times;</span>
-            </div>
-        `;
+        <div class="ecoparm-alert-header">
+            <i class="${icon} ecoparm-alert-icon"></i>
+            <h3 class="ecoparm-alert-title">${type.charAt(0).toUpperCase() + type.slice(1)}</h3>
+        </div>
+        <div class="ecoparm-alert-body">
+            <p class="ecoparm-alert-message">${message}</p>
+        </div>
+    `;
 
         document.body.appendChild(alert);
 
-        setTimeout(() => {
-            alert.classList.add('show');
-        }, 10);
+        // Mostrar con animación
+        setTimeout(() => alert.classList.add('show'), 10);
 
-        alert.querySelector('.ecoparm-alert-close').onclick = () => {
-            alert.classList.remove('show');
-            setTimeout(() => alert.remove(), 300);
-        };
-
+        // Auto-eliminar después de la duración especificada
         if (duration) {
             setTimeout(() => {
                 alert.classList.remove('show');
                 setTimeout(() => alert.remove(), 300);
             }, duration);
         }
+
+        // Devolver función para cerrar manualmente
+        return {
+            close: () => {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 300);
+            }
+        };
     }
 
     // ===== LIMPIAR FORMULARIO =====
@@ -94,26 +120,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ===== VALIDACIÓN LOGIN =====
     function validateForm() {
+        // Limpiar errores anteriores
+        document.querySelectorAll('.input-error').forEach(el => {
+            el.classList.remove('input-error');
+        });
+
         if (!tipoUsuario.value) {
             showAlert('error', 'Por favor seleccione un tipo de usuario');
+            tipoUsuario.classList.add('input-error');
             tipoUsuario.focus();
             return false;
         }
 
         if (!cedula.value) {
             showAlert('error', 'Por favor ingrese su número de cédula');
+            cedula.classList.add('input-error');
             cedula.focus();
             return false;
         }
 
         if (!/^\d+$/.test(cedula.value)) {
             showAlert('error', 'La cédula debe contener solo números');
+            cedula.classList.add('input-error');
             cedula.focus();
             return false;
         }
 
         if (!password.value) {
             showAlert('error', 'Por favor ingrese su contraseña');
+            password.classList.add('input-error');
             password.focus();
             return false;
         }
@@ -128,8 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!validateForm()) return;
 
         const formData = new FormData(loginForm);
-
-        showAlert('info', 'Verificando credenciales...', null);
+        const loadingAlert = showAlert('info', 'Verificando credenciales...', null);
 
         fetch("/login", {
             method: 'POST',
@@ -139,34 +173,35 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: formData
         })
-        .then(async response => {
-            document.querySelector('.ecoparm-alert')?.remove();
+            .then(async response => {
+                loadingAlert.close();
 
-            const contentType = response.headers.get('content-type') || '';
-            if (!contentType.includes('application/json')) {
-                throw new Error('Respuesta inesperada del servidor');
-            }
-
-            const data = await response.json();
-
-            if (data.success) {
-                showAlert('success', 'Inicio de sesión exitoso. Redirigiendo...', 2000);
-                setTimeout(() => {
-                    window.location.href = data.redirect_url;
-                }, 2000);
-            } else {
-                showAlert('error', data.error || 'Credenciales incorrectas');
-                if (data.attempts_remaining !== undefined) {
-                    showAlert('warning', `Le quedan ${data.attempts_remaining} intentos.`);
+                const contentType = response.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    throw new Error('Respuesta inesperada del servidor');
                 }
-                password.value = '';
-                password.focus();
-            }
-        })
-        .catch(error => {
-            console.error('Error en login:', error);
-            showAlert('error', 'Error de conexión al iniciar sesión');
-        });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('success', 'Inicio de sesión exitoso. Redirigiendo...', 2000);
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 2000);
+                } else {
+                    showAlert('error', data.error || 'Credenciales incorrectas');
+                    if (data.attempts_remaining !== undefined) {
+                        showAlert('warning', `Le quedan ${data.attempts_remaining} intentos.`);
+                    }
+                    password.value = '';
+                    password.focus();
+                }
+            })
+            .catch(error => {
+                loadingAlert.close();
+                console.error('Error en login:', error);
+                showAlert('error', 'Error de conexión al iniciar sesión');
+            });
     });
 
     // ===== RECUPERACIÓN DE CONTRASEÑA =====
@@ -193,29 +228,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: formData
             })
-            .then(async response => {
-                document.querySelector('.ecoparm-alert')?.remove();
+                .then(async response => {
+                    document.querySelector('.ecoparm-alert')?.remove();
 
-                const contentType = response.headers.get('content-type') || '';
-                if (!contentType.includes('application/json')) {
-                    throw new Error('Respuesta inesperada del servidor');
-                }
+                    const contentType = response.headers.get('content-type') || '';
+                    if (!contentType.includes('application/json')) {
+                        throw new Error('Respuesta inesperada del servidor');
+                    }
 
-                const data = await response.json();
+                    const data = await response.json();
 
-                if (data.success) {
-                    showAlert('success', 'Contraseña cambiada con éxito. Redirigiendo...', 2000);
-                    setTimeout(() => {
-                        window.location.href = data.redirect_url || '/password-success.html';
-                    }, 2000);
-                } else {
-                    showAlert('error', data.error || 'No se pudo cambiar la contraseña');
-                }
-            })
-            .catch(error => {
-                console.error('Error en recuperación:', error);
-                showAlert('error', 'Error al actualizar la contraseña');
-            });
+                    if (data.success) {
+                        showAlert('success', 'Contraseña cambiada con éxito. Redirigiendo...', 2000);
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url || '/password-success.html';
+                        }, 2000);
+                    } else {
+                        showAlert('error', data.error || 'No se pudo cambiar la contraseña');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en recuperación:', error);
+                    showAlert('error', 'Error al actualizar la contraseña');
+                });
         });
     }
 

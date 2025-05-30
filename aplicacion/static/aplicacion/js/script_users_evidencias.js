@@ -1,10 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('add-evidence-btn').addEventListener('click', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('add-evidence-btn').addEventListener('click', function () {
         document.getElementById('add-evidence-modal').classList.add('show');
     });
 
     document.querySelectorAll('.modal-close, .modal-close-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             document.getElementById('add-evidence-modal').classList.remove('show');
             document.querySelector('#add-evidence-modal form').reset();
         });
@@ -24,16 +24,124 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+function showAlert(type, message, duration = 4000) {
+    const alertOverlay = document.getElementById('custom-alert');
+    const alertContainer = alertOverlay.querySelector('.ecoparm-alert');
+    const alertTitle = document.getElementById('alert-title');
+    const alertMessage = document.getElementById('alert-message');
+    const alertFooter = document.querySelector('.ecoparm-alert-footer');
+    const progressContainer = document.getElementById('progress-container');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+
+    // Configurar el tipo de alerta
+    alertContainer.className = 'ecoparm-alert';
+    alertContainer.classList.add(`alert-${type}`);
+
+    // Configurar icono según el tipo
+    let iconClass, titleText;
+    switch (type) {
+        case 'success':
+            iconClass = 'fas fa-check-circle';
+            titleText = 'Éxito';
+            break;
+        case 'error':
+            iconClass = 'fas fa-times-circle';
+            titleText = 'Error';
+            break;
+        case 'warning':
+            iconClass = 'fas fa-exclamation-triangle';
+            titleText = 'Advertencia';
+            break;
+        case 'info':
+        default:
+            iconClass = 'fas fa-info-circle';
+            titleText = 'Información';
+    }
+
+    // Configurar contenido
+    alertTitle.innerHTML = `<i class="${iconClass}"></i> ${titleText}`;
+    alertMessage.textContent = message;
+
+    // Ocultar barra de progreso por defecto
+    progressContainer.style.display = 'none';
+
+    // Limpiar botones anteriores
+    alertFooter.innerHTML = '';
+
+    // Añadir botón OK por defecto
+    const okBtn = document.createElement('button');
+    okBtn.className = 'ecoparm-alert-button confirm';
+    okBtn.textContent = 'Aceptar';
+    okBtn.onclick = function () {
+        closeAlert();
+    };
+    alertFooter.appendChild(okBtn);
+
+    // Mostrar alerta
+    alertOverlay.classList.remove('hidden');
+
+    // Configurar autoclose
+    if (duration) {
+        setTimeout(() => {
+            closeAlert();
+        }, duration);
+    }
+
+    function closeAlert() {
+        alertOverlay.classList.add('hidden');
+    }
+
+    return {
+        close: closeAlert,
+        addButton: (text, action, isPrimary = true) => {
+            const button = document.createElement('button');
+            button.className = `ecoparm-alert-button ${isPrimary ? 'confirm' : 'cancel'}`;
+            button.textContent = text;
+            button.onclick = function () {
+                if (action) action();
+                closeAlert();
+            };
+
+            // Reemplazar el botón por defecto si es el primero
+            if (alertFooter.children.length === 1 && alertFooter.firstChild.textContent === 'Aceptar') {
+                alertFooter.replaceChild(button, alertFooter.firstChild);
+            } else {
+                alertFooter.appendChild(button);
+            }
+        }
+    };
+}
+
+// Función para mostrar confirmaciones
+function showConfirm(message, confirmCallback, cancelCallback) {
+    const alert = showAlert('warning', message, null);
+
+    // Limpiar botones existentes
+    const alertFooter = document.querySelector('.ecoparm-alert-footer');
+    alertFooter.innerHTML = '';
+
+    // Añadir botón Cancelar
+    alert.addButton('Cancelar', () => {
+        if (cancelCallback) cancelCallback();
+    }, false);
+
+    // Añadir botón Confirmar
+    alert.addButton('Confirmar', () => {
+        if (confirmCallback) confirmCallback();
+    });
+}
+
 // Modificar la función de editar para bloquear ubicación y mostrar el modal
 async function enviarEvidencia(event) {
     event.preventDefault();
-    
+
     const form = event.target;
     const formData = new FormData(form);
     const evidenciaId = formData.get('evidencia_id');
 
-    // Corregir la URL para editar evidencias
     const url = evidenciaId ? `/evidencias/editar/${evidenciaId}/` : '/users_evidencias';
+    const loadingAlert = showAlert('info', evidenciaId ? 'Actualizando evidencia...' : 'Subiendo evidencia...', null);
 
     try {
         const response = await fetch(url, {
@@ -50,16 +158,19 @@ async function enviarEvidencia(event) {
         }
 
         const data = await response.json();
+        loadingAlert.close();
+
         if (data.success) {
-            alert('✅ Evidencia guardada correctamente');
+            showAlert('success', data.message || '✅ Evidencia guardada correctamente', 2000);
             form.reset();
             document.getElementById('add-evidence-modal').classList.remove('show');
-            location.reload(); // Recargar para ver cambios
+            location.reload();
         } else {
-            alert('❌ Error al guardar evidencia: ' + (data.error || 'Error desconocido'));
+            showAlert('error', '❌ Error al guardar evidencia: ' + (data.error || 'Error desconocido'));
         }
     } catch (error) {
-        alert('❌ Error al enviar: ' + error.message);
+        loadingAlert.close();
+        showAlert('error', '❌ Error al enviar: ' + error.message);
         console.error("Error completo:", error);
     }
 }
@@ -68,7 +179,7 @@ async function enviarEvidencia(event) {
 // y mantener solo una implementación completa
 function configurarBotonesEditar() {
     document.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const row = this.closest('tr');
             if (!row) {
                 console.error('No se encontró la fila padre');
@@ -90,7 +201,7 @@ function configurarBotonesEditar() {
             const linkEvidencia = celdas[6].querySelector('a');
             const archivoUrl = linkEvidencia ? linkEvidencia.getAttribute('href') : '#';
 
-            console.log('Datos a editar:', {evidenciaId, actividad, ubicacion, observaciones, archivoUrl});
+            console.log('Datos a editar:', { evidenciaId, actividad, ubicacion, observaciones, archivoUrl });
 
             const modal = document.getElementById('add-evidence-modal');
             if (!modal) {
@@ -208,51 +319,58 @@ async function handleEliminarClick() {
     const evidenciaId = fila.dataset.id;
 
     if (!evidenciaId) {
-        alert('Error: No se pudo identificar el ID de la evidencia');
+        showAlert('error', 'Error: No se pudo identificar el ID de la evidencia');
         console.error('Fila sin ID:', fila);
         return;
     }
 
-    if (confirm('¿Estás seguro de eliminar esta evidencia?')) {
-        try {
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            const formData = new FormData();
-            formData.append('csrfmiddlewaretoken', csrfToken);
+    showConfirm(
+        '¿Estás seguro de eliminar esta evidencia?',
+        async () => {
+            const loadingAlert = showAlert('info', 'Eliminando evidencia...', null);
+            try {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const formData = new FormData();
+                formData.append('csrfmiddlewaretoken', csrfToken);
 
-            const response = await fetch(`/evidencias/eliminar/${evidenciaId}/`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest'
+                const response = await fetch(`/evidencias/eliminar/${evidenciaId}/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+                loadingAlert.close();
+                
+                if (data.success) {
+                    fila.remove();
+                    actualizarContadorFilas();
+                    showAlert('success', data.message || 'Evidencia eliminada correctamente');
+                } else {
+                    showAlert('error', 'Error: ' + (data.error || 'No se pudo eliminar la evidencia'));
                 }
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                fila.remove();
-                actualizarContadorFilas(); // Actualizar el contador al eliminar
-                alert('Evidencia eliminada correctamente');
-            } else {
-                alert('Error: ' + (data.error || 'No se pudo eliminar la evidencia'));
+            } catch (error) {
+                loadingAlert.close();
+                showAlert('error', 'Error al eliminar: ' + error.message);
+                console.error('Error completo:', error);
             }
-        } catch (error) {
-            alert('Error al eliminar: ' + error.message);
-            console.error('Error completo:', error);
         }
-    }
+    );
 }
 
 // ✅ Función para obtener ubicación
 function obtenerUbicacion() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-            function(position) {
+            function (position) {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 document.getElementById("ubicacion").value = `${lat}, ${lon}`;
             },
-            function(error) {
+            function (error) {
                 alert("❌ Error al obtener ubicación: " + error.message);
             }
         );
@@ -262,7 +380,7 @@ function obtenerUbicacion() {
 }
 
 // Drag & drop imágenes
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const dropArea = document.getElementById('drop-area');
     const fileInput = document.getElementById('file-input');
     const previewContainer = document.getElementById('preview-container');
@@ -286,12 +404,12 @@ document.addEventListener('DOMContentLoaded', function() {
         dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight'), false);
     });
 
-    dropArea.addEventListener('drop', function(e) {
+    dropArea.addEventListener('drop', function (e) {
         const files = e.dataTransfer.files;
         handleFiles(files);
     }, false);
 
-    fileInput.addEventListener('change', function() {
+    fileInput.addEventListener('change', function () {
         handleFiles(this.files);
     });
 
@@ -300,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const file = files[0];
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     previewImage.src = e.target.result;
                     previewContainer.style.display = 'block';
                 };
@@ -312,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    removeImageBtn.addEventListener('click', function() {
+    removeImageBtn.addEventListener('click', function () {
         previewImage.src = '#';
         previewContainer.style.display = 'none';
         fileInput.value = '';
@@ -322,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Editar evidencia
 function configurarBotonesEditar() {
     document.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const row = this.closest('tr');
             if (!row) {
                 console.error('No se encontró la fila padre');
@@ -344,7 +462,7 @@ function configurarBotonesEditar() {
             const linkEvidencia = celdas[6].querySelector('a');
             const archivoUrl = linkEvidencia ? linkEvidencia.getAttribute('href') : '#';
 
-            console.log('Datos a editar:', {actividad, ubicacion, observaciones, archivoUrl});
+            console.log('Datos a editar:', { actividad, ubicacion, observaciones, archivoUrl });
 
             const modal = document.getElementById('add-evidence-modal');
             if (!modal) {
@@ -404,13 +522,13 @@ function configurarBotonesEditar() {
 }
 
 // Configurar el modal para nueva evidencia
-document.getElementById('add-evidence-btn').addEventListener('click', function() {
+document.getElementById('add-evidence-btn').addEventListener('click', function () {
     const modal = document.getElementById('add-evidence-modal');
     const form = modal.querySelector('form');
-    
+
     // Limpiar formulario
     form.reset();
-    
+
     // Configurar el modal para nueva evidencia
     const tituloModal = modal.querySelector('.modal-title');
     if (tituloModal) {
@@ -442,10 +560,10 @@ document.getElementById('add-evidence-btn').addEventListener('click', function()
 });
 
 // Asegúrate de llamar esta función al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     configurarBotonesEditar();
     configurarBotonesEliminar();
-    
+
     // Bloquear el campo de ubicación en el formulario siempre
     const ubicacionInput = document.querySelector('input[name="ubicacion"]');
     if (ubicacionInput) {

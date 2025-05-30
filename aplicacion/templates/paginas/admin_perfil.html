@@ -39,7 +39,7 @@
                             <div class="profile-photo-container">
                                 <img src="{% if request.user.foto_perfil %}{{ request.user.foto_perfil.url }}{% else %}{% static 'aplicacion/images/usuario.png' %}{% endif %}"
                                     alt="Foto de perfil" class="profile-photo" id="profile-img-preview"
-                                    data-default-avatar="{% static 'aplicacion/images/avatar.png' %}"
+                                    data-default-avatar="{% static 'aplicacion/images/usuario.png' %}"
                                     data-upload-url="{% url 'actualizar_foto_perfil' %}">
                             </div>
                             <div class="photo-actions">
@@ -165,7 +165,6 @@
                 </div>
             </div>
             <div class="ecoparm-alert-footer">
-                <button id="custom-alert-ok" class="ecoparm-alert-button">Aceptar</button>
             </div>
         </div>
     </div>

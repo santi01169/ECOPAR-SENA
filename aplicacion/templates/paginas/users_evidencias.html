@@ -56,7 +56,9 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="7">No hay evidencias registradas.</td></tr>
+                        <tr>
+                            <td colspan="7">No hay evidencias registradas.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -74,7 +76,8 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label class="form-label">Actividad</label>
-                                <input type="text" name="actividad" class="form-control" placeholder="Actividad relacionada con la evidencia" required>
+                                <input type="text" name="actividad" class="form-control"
+                                    placeholder="Actividad relacionada con la evidencia" required>
                             </div>
 
                             <div class="form-group">
@@ -86,11 +89,14 @@
                                             <div class="upload-text">Arrastre y suelte la imagen aquí</div>
                                             <div class="upload-hint">o haga clic para seleccionar</div>
                                         </div>
-                                        <input type="file" name="archivo" id="file-input" class="file-upload-input" accept="image/*">
+                                        <input type="file" name="archivo" id="file-input" class="file-upload-input"
+                                            accept="image/*">
                                     </label>
                                     <div id="preview-container" style="display: none; margin-top: 15px;">
-                                        <img id="preview-image" src="#" alt="Preview" style="max-width: 100%; max-height: 200px;">
-                                        <button type="button" id="remove-image" class="btn btn-sm btn-danger" style="margin-top: 10px;">
+                                        <img id="preview-image" src="#" alt="Preview"
+                                            style="max-width: 100%; max-height: 200px;">
+                                        <button type="button" id="remove-image" class="btn btn-sm btn-danger"
+                                            style="margin-top: 10px;">
                                             <i class="fas fa-trash"></i> Eliminar imagen
                                         </button>
                                     </div>
@@ -100,18 +106,21 @@
                             <!-- Ubicación -->
                             <div class="campo">
                                 <label for="ubicacion">Ubicación:</label>
-                                <input class="form-control" type="text" id="ubicacion" name="ubicacion" readonly placeholder="Haz clic para obtener tu ubicación">
+                                <input class="form-control" type="text" id="ubicacion" name="ubicacion" readonly
+                                    placeholder="Haz clic para obtener tu ubicación">
                             </div>
                             <br>
                             <!-- Botón para Obtener Ubicación -->
                             <div class="campo">
-                                <input class="btn btn-primary" type="button" value="Obtener Ubicación" onclick="obtenerUbicacion()">
+                                <input class="btn btn-primary" type="button" value="Obtener Ubicación"
+                                    onclick="obtenerUbicacion()">
                             </div>
                             <br>
 
                             <div class="form-group">
                                 <label class="form-label">Observaciones</label>
-                                <textarea name="observaciones" class="form-control" rows="3" placeholder="Observaciones adicionales"></textarea>
+                                <textarea name="observaciones" class="form-control" rows="3"
+                                    placeholder="Observaciones adicionales"></textarea>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -122,6 +131,33 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- Alertas ECOPARM -->
+    <div id="custom-alert" class="hidden">
+        <div class="ecoparm-alert">
+            <div class="ecoparm-alert-header">
+                <h3 class="ecoparm-alert-title" id="alert-title"></h3>
+            </div>
+            <div class="ecoparm-alert-body">
+                <p class="ecoparm-alert-message" id="alert-message"></p>
+                <div class="ecoparm-progress-container" id="progress-container" style="display: none;">
+                    <div class="ecoparm-progress-bar">
+                        <div class="ecoparm-progress-fill" id="progress-fill"></div>
+                    </div>
+                    <span class="ecoparm-progress-text" id="progress-text"></span>
+                </div>
+            </div>
+            <div class="ecoparm-alert-footer">
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje de error en línea -->
+    <div id="inline-error" class="hidden">
+        <div class="ecoparm-error-message">
+            <span id="error-message-text"></span>
+        </div>
+        <div class="ecoparm-error-hint" id="error-hint-text"></div>
     </div>
 </main>
 {% endblock %}

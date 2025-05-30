@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             if (data.new_password.length < 8) {
-                showInlineError('new-password', 'La contraseña debe tener al menos 8 caracteres', 'Mínimo 8 caracteres');
+                showInlineError('new-password', 'La contraseña debe tener al menos 8 caracteres');
                 return;
             }
 
@@ -234,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     autocloseTime: 2000,
                                     onAccept: function () {
                                         passwordForm.reset();
+                                        location.reload();
                                     }
                                 });
                             } else {

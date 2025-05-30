@@ -180,18 +180,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showAlert(type, message) {
-        // type: 'success', 'error', 'warning', 'info', 'question'
-        Swal.fire({
-            icon: type,
-            title: type === 'success' ? '¡Éxito!' :
-                   type === 'error' ? 'Error' :
-                   type === 'warning' ? 'Advertencia' : '',
-            text: message,
-            timer: 3500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            position: 'top-end',
-            toast: true
+        let alertTitle = '';
+        switch(type) {
+            case 'success':
+                alertTitle = '¡Éxito!';
+                break;
+            case 'error':
+                alertTitle = 'Error';
+                break;
+            case 'warning':
+                alertTitle = 'Advertencia';
+                break;
+            default:
+                alertTitle = 'Información';
+        }
+        
+        showEcoparmAlert(alertTitle, message, {
+            buttonText: 'Aceptar',
+            autocloseTime: 3500
         });
     }
 
@@ -234,40 +240,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function restoreBackup(backupId) {
         const restoreOption = document.getElementById('restore-option')?.value;
+        
+        showConfirmationDialog(
+            'Restaurar Copia de Seguridad',
+            '¿Está seguro de restaurar el sistema? Esta acción no se puede deshacer.',
+            async function() {
+                try {
+                    showLoader();
+                    const response = await fetch(`/panel/copias-seguridad/${backupId}/restaurar/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({ restore_option: restoreOption })
+                    });
 
-        if (!confirm('¿Está seguro de restaurar el sistema? Esta acción no se puede deshacer.')) return;
+                    let data;
+                    const text = await response.text();
+                    try {
+                        data = JSON.parse(text);
+                    } catch (e) {
+                        throw new Error('Respuesta inesperada del servidor');
+                    }
 
-        try {
-            showLoader();
-            const response = await fetch(`/panel/copias-seguridad/${backupId}/restaurar/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({ restore_option: restoreOption })
-            });
-
-            let data;
-            const text = await response.text();
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                throw new Error('Respuesta inesperada del servidor');
+                    if (data.status === 'success') {
+                        closeAllModals();
+                        showAlert('success', 'Sistema restaurado exitosamente');
+                        setTimeout(() => window.location.reload(), 2000);
+                    } else {
+                        throw new Error(data.message || 'Error desconocido');
+                    }
+                } catch (error) {
+                    showAlert('error', `Error al restaurar: ${error.message}`);
+                } finally {
+                    hideLoader();
+                }
+            },
+            {
+                confirmText: 'Sí, restaurar',
+                cancelText: 'Cancelar'
             }
-
-            if (data.status === 'success') {
-                closeAllModals();
-                showAlert('success', 'Sistema restaurado exitosamente');
-                setTimeout(() => window.location.reload(), 2000);
-            } else {
-                throw new Error(data.message || 'Error desconocido');
-            }
-        } catch (error) {
-            showAlert('error', `Error al restaurar: ${error.message}`);
-        } finally {
-            hideLoader();
-        }
+        );
     }
 
     async function deleteBackup(backupId) {
@@ -367,4 +381,83 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Inicia todo
     initEvents();
+
+    function showConfirmationDialog(title, message, confirmCallback, options = {}) {
+        showEcoparmAlert(title, message, {
+            buttonText: options.confirmText || 'Confirmar',
+            autoclose: false,
+            onAccept: confirmCallback,
+            showCancel: true,
+            cancelText: options.cancelText || 'Cancelar'
+        });
+    }
+
+    function showEcoparmAlert(title, message, options = {}) {
+        const alert = document.getElementById('custom-alert');
+        const progressContainer = document.getElementById('progress-container');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const alertFooter = document.querySelector('.ecoparm-alert-footer');
+
+        // Configurar contenido
+        document.getElementById('alert-title').textContent = title;
+        document.getElementById('alert-message').textContent = message;
+
+        // Configurar progreso si se especifica
+        if (options.progress !== undefined) {
+            progressContainer.style.display = 'block';
+            progressFill.style.width = options.progress + '%';
+            progressText.textContent = options.progress + '%';
+        } else {
+            progressContainer.style.display = 'none';
+        }
+
+        // Configurar botones
+        alertFooter.innerHTML = '';
+
+        if (options.showCancel) {
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'ecoparm-alert-button cancel';
+            cancelBtn.textContent = options.cancelText || 'Cancelar';
+            cancelBtn.onclick = function () {
+                closeAlert();
+                if (options.onCancel) options.onCancel();
+            };
+            alertFooter.appendChild(cancelBtn);
+        }
+
+        const okBtn = document.createElement('button');
+        okBtn.className = 'ecoparm-alert-button confirm';
+        okBtn.textContent = options.buttonText || 'Aceptar';
+        okBtn.onclick = function () {
+            closeAlert();
+            if (options.onAccept) options.onAccept();
+        };
+        alertFooter.appendChild(okBtn);
+
+        // Mostrar alerta
+        alert.classList.remove('hidden');
+
+        // Configurar autoclose si no es una confirmación
+        const autocloseTime = options.autoclose === false ? null : (options.autocloseTime || 5000);
+
+        if (autocloseTime && !options.showCancel) {
+            if (alert.timeoutId) {
+                clearTimeout(alert.timeoutId);
+            }
+
+            alert.timeoutId = setTimeout(() => {
+                closeAlert();
+                if (options.onAccept) options.onAccept();
+            }, autocloseTime);
+        }
+
+        function closeAlert() {
+            alert.classList.add('hidden');
+            if (alert.timeoutId) {
+                clearTimeout(alert.timeoutId);
+                alert.timeoutId = null;
+            }
+        }
+    }
 });
